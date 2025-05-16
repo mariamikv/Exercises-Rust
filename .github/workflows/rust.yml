@@ -11,12 +11,16 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v4
+
+      - name: Build and Test All Rust Projects
+        run: |
+          for crate in $(find . -name Cargo.toml -exec dirname {} \;); do
+            echo "Building $crate"
+            cargo build --manifest-path "$crate/Cargo.toml" --verbose
+            echo "Testing $crate"
+            cargo test --manifest-path "$crate/Cargo.toml" --verbose
+          done
